@@ -1,0 +1,46 @@
+version: "3"
+services:
+  sqldb:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    environment:
+      - SA_PASSWORD=P@ssw0rd
+      - ACCEPT_EULA=Y
+    volumes:
+      - sqldb-data:/var/opt/mssql
+    ports:
+      - "1433"
+
+  myshop.backend:
+    image: myshop.backend
+    build:
+      context: ../src
+      dockerfile: MyShop.Backend/Dockerfile
+    depends_on:
+      - sqldb
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings:DefaultConnection=Server=sqldb,1433;Database=MyShop;User Id=sa;Password=P@ssw0rd
+      - ClientUrl:Mvc=${FRONTEND_HOST}:${FRONTEND_PORT}
+      - ClientUrl:Blazor=https://localhost:44393
+      - ClientUrl:Swagger=https://localhost:44393
+      - ClientUrl:Angular=https://localhost:44393
+    ports:
+      - "7001:80"
+
+  myshop.frontend:
+    image: myshop.frontend
+    build:
+      context: ../src
+      dockerfile: MyShop.Frontend/Dockerfile
+    depends_on:
+      - sqldb
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - AppSettings:BackendUrl=${BACKEND_HOST}:${BACKEND_PORT}
+    ports:
+      - "7002:80"
+
+volumes:
+  sqldb-data:
