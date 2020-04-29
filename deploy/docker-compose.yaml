@@ -8,7 +8,7 @@ services:
     volumes:
       - sqldb-data:/var/opt/mssql
     ports:
-      - "1433"
+      - "${BACKEND_SQL_DATABASE_PORT}:1443"
 
   myshop.backend:
     image: myshop.backend
@@ -21,26 +21,41 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
       - ConnectionStrings:DefaultConnection=Server=sqldb,1433;Database=MyShop;User Id=sa;Password=P@ssw0rd
-      - ClientUrl:Mvc=${FRONTEND_HOST}:${FRONTEND_PORT}
-      - ClientUrl:Blazor=https://localhost:44393
-      - ClientUrl:Swagger=https://localhost:44393
-      - ClientUrl:Angular=https://localhost:44393
+      - ClientUrl:Swagger=${HOST_URL}:${BACKEND_PORT}
+      - ClientUrl:Mvc=${HOST_URL}:${MVC_PORT}
+      - ClientUrl:Blazor=${HOST_URL}:${BLAZOR_PORT}
+      - ClientUrl:React=${HOST_URL}:${REACT_PORT}
+      - ClientUrl:Angular=${HOST_URL}:${ANGULAR_PORT}
     ports:
-      - "7001:80"
+      - "${BACKEND_PORT}:80"
 
-  myshop.frontend:
-    image: myshop.frontend
+  myshop.mvc:
+    image: myshop.mvc
     build:
       context: ../src
       dockerfile: MyShop.Frontend/Dockerfile
-    depends_on:
-      - sqldb
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - AppSettings:BackendUrl=${BACKEND_HOST}:${BACKEND_PORT}
+      - AppSettings:BackendUrl=${HOST_URL}:${BACKEND_PORT}
     ports:
-      - "7002:80"
+      - "${MVC_PORT}:80"
+
+  myshop.blazor:
+    image: myshop.blazor
+    build:
+      context: ../src
+      dockerfile: MyShop.BlazorFrontend/Dockerfile
+    ports:
+      - "${BLAZOR_PORT}:80"
+
+  myshop.react:
+    image: myshop.react
+    build:
+      context: ../myshop-react
+      dockerfile: Dockerfile
+    ports:
+      - "${REACT_PORT}:80"
 
 volumes:
   sqldb-data:
