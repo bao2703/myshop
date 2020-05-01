@@ -1,4 +1,4 @@
-import { Log, User, UserManager } from "oidc-client";
+import { User, UserManager } from "oidc-client";
 
 const oidcSettings = {
   authority: "https://localhost:44349",

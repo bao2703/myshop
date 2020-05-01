@@ -80,7 +80,7 @@ namespace MyShop.Backend
                 options.AddPolicy(MyAllowSpecificOrigins,
                 builder =>
                 {
-                    builder.WithOrigins(clientUrls["Blazor"], clientUrls["Angular"])
+                    builder.WithOrigins(clientUrls["Blazor"], clientUrls["Angular"], clientUrls["React"])
                         .AllowAnyHeader()
                         .AllowAnyMethod();
                 });

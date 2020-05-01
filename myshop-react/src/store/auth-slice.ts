@@ -30,6 +30,8 @@ export const authSlice = createSlice({
   },
 });
 
+export default authSlice.reducer;
+
 export const { loginSuccess, logoutSuccess } = authSlice.actions;
 
 export const loginAsync = (): AppThunk => async (dispatch) => {
@@ -53,5 +55,3 @@ export const completeLogoutAsync = (): AppThunk => async (dispatch) => {
 
 export const selectIsAuthenticated = (state: RootState) => !!state.auth.user;
 export const selectUser = (state: RootState) => state.auth.user;
-
-export default authSlice.reducer;
